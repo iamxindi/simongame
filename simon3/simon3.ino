@@ -12,6 +12,7 @@ int game_sequence[max_level];
 int user_sequence[max_level];
 int count = 0;
 int wrong = 0;
+int foo = 0;
 
 //lcd display
 int rows = 2;      // number of rows
@@ -60,21 +61,25 @@ void loop() {
 
     case WELCOME:
     lcdPrintWelcome();
-    break;
-    
+     for(int i=0; i<4; i++){
+      if(digitalRead(buttonPins[i])==LOW){ 
+        gamestates = INIT;
+        foo = millis(); // returns the current time in ms since the program started  
+        randomSeed(foo);
+        break;
+       }; 
+     }
+       
 
     case INIT:
       allOff();
-      for(int i=0; i<4; i++){
-      if(digitalRead(buttonPins[i])==LOW){ 
-         //Serial.println("button pressed");
-          int foo = millis(); // returns the current time in ms since the program started  
-          randomSeed(foo);
-          game_sequence[i] = ledPins[random(0,4)];
-          gamestates = PLAY;    
-          break;   
-        };       
-     }
+      
+      for (int i=0; i<level; i++){
+      game_sequence[i] = ledPins[random(0,4)];
+      };
+      gamestates = PLAY;    
+      break;          
+ 
         
     case PLAY:
     Serial.println("In play mode");    
@@ -84,7 +89,7 @@ void loop() {
     break;
 
     
-    case LISTEN:{
+    case LISTEN:
     ReadButton();
     if(count >= level){
       Serial.println("count > level");
@@ -96,7 +101,7 @@ void loop() {
             gamestates = INIT;
             break;
        }
-      }
+
     
        
     }
