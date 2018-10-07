@@ -51,7 +51,7 @@ void setup() {
 }
 
 
-enum game{WELCOME,INIT,PLAY,LISTEN};
+enum game{INIT,PLAY,LISTEN};
 
 game gamestates;
 
@@ -59,31 +59,35 @@ void loop() {
   
   switch(gamestates){
 
-    case WELCOME:
-    lcdPrintWelcome();
-     for(int i=0; i<4; i++){
-      if(digitalRead(buttonPins[i])==LOW){ 
-        gamestates = INIT;
-        foo = millis(); // returns the current time in ms since the program started  
-        randomSeed(foo);
-        break;
-       }; 
-     }
+//    case WELCOME:
+//    //lcdPrintWelcome();
+// 
        
 
     case INIT:
+      Serial.println("In init mode");   
       allOff();
       
-      for (int i=0; i<level; i++){
-      game_sequence[i] = ledPins[random(0,4)];
-      };
-      gamestates = PLAY;    
-      break;          
+      for(int i=0; i<4; i++){
+       Serial.println("Inside"); 
+      int reading = digitalRead(buttonPins[i]);
+      if(reading==LOW){ 
+        Serial.println("button pressed");   
+        foo = millis(); // returns the current time in ms since the program started  
+        randomSeed(foo);
+        for (int i=0; i<level; i++){
+          game_sequence[i] = ledPins[random(0,4)];
+          };
+          gamestates = PLAY; 
+          break;
+       }
+     }
+   
  
         
     case PLAY:
     Serial.println("In play mode");    
-    lcdPrintStart();
+    //lcdPrintStart();
     show_sequence();
     gamestates = LISTEN;   
     break;
@@ -91,6 +95,7 @@ void loop() {
     
     case LISTEN:
     ReadButton();
+
     if(count >= level){
       Serial.println("count > level");
             //Serial.println("1");
@@ -100,11 +105,10 @@ void loop() {
             delay(200);
             gamestates = INIT;
             break;
-       }
-
+    }
     
        
-    }
+   }
 
 }
 
@@ -165,7 +169,7 @@ void show_sequence()
     
     Serial.println("Showing sequence...");
     lcdPrintShow();
-    delay(1000);
+    delay(300);
 
   for (int i = 0; i < level; i++) //i = level
   {
