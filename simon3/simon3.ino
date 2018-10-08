@@ -103,14 +103,16 @@ void lcdPrintShow(){
 
 
 void WrongOne(){ 
-  life -= 1;
+  
   lcd.clear(); 
   lcd.setCursor(0,0);      // row 0, column 5
   lcd.print("Life -1");    // display text
-  delay(2000);  
-  lcd.clear();             // clear LCD
-  lcd.setCursor(0,0);      // row 0, column 5
-  lcd.print("Your Life");    // display text
+  for (int i=0; i<life; i++){
+    lcd.setCursor(1,i);
+    lcd.print("*");  
+   };
+  delay(50);
+  life -= 1;
   for (int i=0; i<life; i++){
     lcd.setCursor(1,i);
     lcd.print("*");  
@@ -282,6 +284,10 @@ void show_sequence()
   };
   allOff();
   Serial.println("Your turn!");
+  lcd.setCursor(0,0);
+  lcd.print("Your Turn!");
+  delay(50);
+  lcd.clear();
 
 }
 
