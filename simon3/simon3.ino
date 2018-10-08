@@ -5,6 +5,7 @@
 const int ledPins[] = {2, 3, 4, 5};
 const int buttonPins[] = {6, 7, 8, 9};
 const int max_level = 100;
+const int max_life = 5; // start with 5 lives
 int velocity = 300;
 int level = 3;
 int life = 5;
@@ -105,13 +106,8 @@ void lcdPrintShow(){
 void WrongOne(){ 
   
   lcd.clear(); 
-  lcd.setCursor(0,0);      // row 0, column 5
+  lcd.setCursor(0,0);     
   lcd.print("Life -1");    // display text
-  for (int i=0; i<life; i++){
-    lcd.setCursor(1,i);
-    lcd.print("*");  
-   };
-  delay(50);
   life -= 1;
   for (int i=0; i<life; i++){
     lcd.setCursor(1,i);
@@ -127,7 +123,6 @@ enum game{INIT, GENERATE, PLAY, LISTEN, WRONG};
 game gamestates;
 
 void loop() {
-  updateDisplay(); 
   // put your main code here, to run repeatedly:
 
   for(int i=0; i<4; i++){
@@ -135,8 +130,14 @@ void loop() {
    switch(gamestates){
 
     case INIT:
+       digitalWrite(ledPins[0], HIGH);
+       digitalWrite(ledPins[1], HIGH);
+       digitalWrite(ledPins[2], HIGH);
+       digitalWrite(ledPins[3], HIGH);
 
-        Serial.println("In init");      
+        Serial.println("In init"); 
+        level = 3; //when a new game starts, initialize num of steps to 3
+        life = max_life; //when a new game starts, initialize num of steps to max_life     
          
 
       if(digitalRead(buttonPins[i])==LOW){ 
@@ -191,11 +192,22 @@ void loop() {
 
 
       case WRONG:
-      Serial.println("wrong entered");
-      delay(50);
-      WrongOne();
-      gamestates = GENERATE;
-    
+          Serial.println("wrong entered"); // for debug
+          delay(50);
+          WrongOne(); // display wrong msg
+          if (life > 0) { // if there's still life
+          gamestates = GENERATE; // continue game in same level
+        } else { // if no life is left
+          allOff(); //turn all lights off
+          lcd.setCursor(0, 0);     // row 0, column 0
+          lcd.print("Game Over! Press any");
+          lcd.setCursor(1, 0);     // row 1, column 0
+          lcd.print("button to start again");
+          delay(2000);
+          lcd.clear();
+          gamestates = INIT; // wait for button input to start a new game
+
+          }
        
     }
   }
@@ -286,15 +298,7 @@ void show_sequence()
   Serial.println("Your turn!");
   lcd.setCursor(0,0);
   lcd.print("Your Turn!");
-  delay(50);
+  delay(200);
   lcd.clear();
 
-}
-
-
-void updateDisplay() {
-   lcd.setCursor(0,0);
-   lcd.print(line0);
-   lcd.setCursor(1,0);
-   lcd.print(line1);
 }
