@@ -1,5 +1,6 @@
 #include <NewhavenLCDSerial.h>
 #include <SoftwareSerial.h>
+#include "notes.h"
 
 
 const int ledPins[] = {2, 3, 4, 5};
